@@ -1,0 +1,13 @@
+cin >> a;
+  cout << setw(9) << setprecision(1) << a << setw(10) << setprecision(2) << fixed<< a <<setw(10) << a <<"\n";
+  
+  cin >> b;
+  cout << setw(9) << setprecision(1) << b <<setw(10)<<setprecision(1)<< b <<setw(10)<<setprecision(2)<< b <<"\n";
+  
+  cin >> c;
+   cout << setw(9) << c << setw(10) << fixed << showpoint << setprecision(1) << c << setw(10) << fixed << showpoint << setprecision(2) << c <<"\n";
+   
+   cin >> d;
+   cout << setw(9) << d << setw(10) << fixed << showpoint << setprecision(1) << d << setw(10) << fixed << showpoint << setprecision(2) << d <<"";
+ 
+   
