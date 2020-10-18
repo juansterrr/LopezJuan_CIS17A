@@ -1,0 +1,687 @@
+//
+//  main.cpp
+//  CIS_17A - Project #1
+//
+//  Created by Juan Lopez on 10/13/20.
+//  Copyright © 2020 Juan Lopez. All rights reserved.
+//
+
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <cstdlib>
+#include <vector>
+#include <iomanip>
+using namespace std;
+
+
+const int age_size = 3;
+const int sch_size = 50;
+const int num_size = 13;
+const int suit_sz = 4;
+
+//This structure is used for...
+struct PlayerInfo
+{
+    char name[sch_size];
+    char age[age_size];
+    char school[sch_size];
+};
+
+struct Card
+{
+    char num;
+    string suit;
+};
+struct PlayerScores
+{
+    int play1;
+    int play2;
+    int play3;
+    int play4;
+    int dealer;
+};
+
+void fillDeck(Card*,char[],string[]);
+void shuff_cards(Card *);
+void getInfo(Card *,int,int&);
+void dealInf(Card *,int&);
+void cmpSc2(Card*,int,int,int&);
+void cmpSc3(Card*,int,int,int,int&);
+void cmpSc4(PlayerScores,int,int,int,int);
+void ifWon(int,int);
+void ifLoss(int,int);
+
+int main(int argc, const char * argv[]) {
+    // insert code here...
+    //Declaration of variables
+    PlayerInfo *person = nullptr;
+    int nPlayers;
+    int player1 = 1, player2 = 2;
+    int player3 = 3, player4 = 4;
+    int play1_tot = 0, play2_tot = 0;
+    int play3_tot = 0, play4_tot = 0;
+    int deal_tot = 0;
+    srand(time(0));
+    char ch;
+    char num[] = {'A','2','3','4','5','6','7','8','9','T','J','Q','K'};
+    string suit[] = {"Diamonds", "Spades", "Hearts", "Clubs"};
+    
+    
+
+    cout << "Hello user! Welcome to the game of BlackJack..." << endl;
+    cout << "You will be given the chance to input the number of players playing " << endl;
+    cout << "this game momentarily, but for now sit tight and listen to the rules" << endl;
+    cout << "of this game." << endl << endl;
+    
+    cout << "Players will be randomly given two cards face up, the goal of this game" << endl;
+    cout << "is to pull cards that add up closest to or on the value of 21." << endl;
+    cout << "If a player pulls 21 on the first 2 given cards he automatically wins the money" << endl;
+    cout << "they have bet back!" << endl << endl;
+    cout << "However, if no players pulls 21 on the first cards, they all have to try their best to " << endl;
+    cout << "beat the dealer (myself) by pulling cards and getting closest or on the number 21." << endl << endl;
+    
+    
+    cout << "*****************************************************************************" << endl << endl;
+    
+    cout << "Now please enter the number of players. Be sure to pick between 2-4 players." << endl;
+    
+    cin >> nPlayers;
+/*
+    while(nPlayers < 2 || nPlayers > 4)
+    {
+        cout << "Please enter players between 2-4!" << endl;
+            cin >> nPlayers;
+    }
+    
+    person = new PlayerInfo[nPlayers];
+    
+    fstream people("people.dat", ios:: out | ios::binary);
+    
+    int count = 0;
+    
+    for(int i = 0; i < nPlayers; i++)
+    {
+        if(count < 1)
+        {
+        cout << "Please enter the data for the " << nPlayers << " players playing this game." << endl;
+        cout << "Begin by entering the data for player " << i+1 << endl;
+            count++;
+        }
+        cout << "Enter the full name of player " << i+1 << ":" << endl;
+        cin.ignore();
+        cin.getline(person->name,sch_size);
+        cout << "Now enter the age of this player: " << endl;
+        cin.getline(person->age, age_size);
+        cout << "Now enter the school they attend: " << endl;
+        cin.getline(person->school,sch_size);
+        
+        cout << "Now this info is being written into a file for records of the players.." << endl;
+        
+        people.write(reinterpret_cast<char *>(&person), sizeof(person));
+        
+        cout << "Player " << i + 1 << "done!" << endl;
+        
+        people.close();
+        
+    }
+   */
+    cout << "The game is beginning and the cards are being shuffled! Please press Enter to continue." << endl;
+    cin.get(ch);
+    cin.get(ch);
+    //Creating a ptr to fill the structure with the appropriate information
+    Card *deck = nullptr;
+   
+    deck = new Card[52];
+    
+            fillDeck(deck,num,suit);
+                //function for the shuffled deck of cards
+                    shuff_cards(deck);
+     cout << "Now that the cards have been shuffled, Player 1, you are going to be given your cards first!" << endl;
+     cout << "If your cards do not add up to 21, you can choose 'h' to hit for another card, or 's' to stay if you are happy with your total!" << endl;
+     cout << "Press Enter to continue." << endl;
+     cin.get(ch);
+    
+                            getInfo(deck,player1,play1_tot);
+                    if(nPlayers >= 2)
+                        {
+                                cout << "Player 2 please press Enter to continue." << endl;
+                                cin.get(ch);
+                                cin.get(ch);
+                            getInfo(deck,player2,play2_tot);
+                            if(nPlayers == 2)
+                            {
+                            cmpSc2(deck,play1_tot,play2_tot,deal_tot);
+                            }
+                            
+                        }
+                    if(nPlayers >= 3)
+                        {
+                            cout << "Player 3 please press Enter to continue." << endl;
+                            cin.get(ch);
+                            cin.get(ch);
+                            getInfo(deck,player3,play3_tot);
+                            if(nPlayers == 3)
+                            {
+                            cmpSc3(deck,play1_tot,play2_tot,play3_tot,deal_tot);
+                            }
+                        }
+                    if(nPlayers == 4)
+                        {
+                            cout << "Player 4 please press Enter to continue." << endl;
+                            cin.get(ch);
+                            cin.get(ch);
+                            getInfo(deck,player4,play4_tot);
+                        }
+            
+    return 0;
+}
+
+void fillDeck(Card *deck,char num[], string suit[])
+{
+    int k = 0;
+    for(int i = 0; i < suit_sz; i++)
+    {
+        for(int j = 0; j < num_size; j++)
+        {
+            deck[k].num = num[j];
+            deck[k].suit = suit[i];
+            k++;
+        }
+    }
+}
+void shuff_cards(Card *d)
+{
+    Card temp;
+    int m = 0;
+    for(int i = 0; i < 52; i++)
+    {
+        m = rand()%52;
+        temp = d[i];
+        d[i] = d[m];
+        d[m] = temp;
+    }
+    
+}
+void getInfo(Card *deck, int play_num, int &playtot)
+{
+        char card1 = 0, card2 = 0;
+        bool turn = true;
+        char inp;
+        int total = 0, count = 0;
+        int aVal = 0;
+        char newCard = 0;
+    do
+        {
+           if(count == 0)
+           {
+            card1 = deck[rand()%52].num;
+            card2 = deck[rand()%52].num;
+           }
+            if(count>0)
+            {
+                newCard = deck[rand()%52].num;
+                cout << "You chose to hit, your new card value is: " << newCard << " of " << deck[rand()%52].suit << endl;
+            }
+            
+        if(count == 0)
+        {
+           cout << "Player " << play_num << ", your cards are " << card1 << " of " << deck[rand()%52].suit;
+           cout << " and " << card2 << " of " << deck[rand()%52].suit << endl;
+        }
+            
+        if(card1 == 'A')
+        {
+            cout << "You have drawn an 'A', would you like that value to equal 1 or 11?" << endl;
+            cin >> aVal;
+            
+            if(aVal == 1)
+            {
+                card1 = 1;
+            }else
+            {
+                card1 = 11;
+            }
+        }
+                    if(card2 == 'A')
+                    {
+                        cout << "You have drawn an 'A', would you like that value to equal 1 or 11?" << endl;
+                        cin >> aVal;
+                        
+                        if(aVal == 1)
+                        {
+                            card2 = 1;
+                        }else
+                        {
+                            card2 = 11;
+                        }
+                    }
+                                            if(newCard == 'A')
+                                               {
+                                                   cout << "You have drawn an 'A', would you like that value to equal 1 or 11?" << endl;
+                                                   cin >> aVal;
+                                                   
+                                                   if(aVal == 1)
+                                                   {
+                                                       newCard = 1;
+                                                   }else
+                                                   {
+                                                       newCard = 11;
+                                                   }
+                                               }
+        switch(card1)
+        {
+            case '2' : card1 = 2;
+                break;
+            case '3' : card1 = 3;
+                break;
+            case '4' : card1 = 4;
+                break;
+            case '5' : card1 = 5;
+                break;
+            case '6' : card1 = 6;
+                break;
+            case '7' : card1 = 7;
+                break;
+            case '8' : card1 = 8;
+                break;
+            case '9' : card1 = 9;
+                break;
+        }
+                        switch(card2)
+                        {
+                            case '2' : card2 = 2;
+                                break;
+                            case '3' : card2 = 3;
+                                break;
+                            case '4' : card2 = 4;
+                                break;
+                            case '5' : card2 = 5;
+                                break;
+                            case '6' : card2 = 6;
+                                break;
+                            case '7' : card2 = 7;
+                                break;
+                            case '8' : card2 = 8;
+                                break;
+                            case '9' : card2 = 9;
+                                break;
+                        }
+                                        switch(newCard)
+                                        {
+                                            case '2' : newCard = 2;
+                                                break;
+                                            case '3' : newCard = 3;
+                                                break;
+                                            case '4' : newCard = 4;
+                                                break;
+                                            case '5' : newCard = 5;
+                                                break;
+                                            case '6' : newCard = 6;
+                                                break;
+                                            case '7' : newCard = 7;
+                                                break;
+                                            case '8' : newCard = 8;
+                                                break;
+                                            case '9' : newCard = 9;
+                                                break;
+                                        }
+        
+         if (card1 == 'T' || card1 == 'J' || card1 == 'Q' || card1 == 'K')
+         {
+             card1 = 10;
+         }
+        if (card2 == 'T' || card2 == 'J' || card2 == 'Q' || card2 == 'K')
+        {
+            card2 = 10;
+        }
+        if (newCard == 'T' || newCard == 'J' || newCard == 'Q' || newCard == 'K')
+        {
+                newCard = 10;
+        }
+
+            if(count == 0)
+            {
+                total += card1 + card2;
+            }
+            
+            if(count > 0)
+            {
+                total += newCard;
+            }
+            
+            if(total < 21)
+            {
+                cout << "Your combined card total is: " << total << endl;
+                cout << "Would you like to 'h' or 's'?" << endl;
+                    cin >> inp;
+                
+                        if(inp == 'h')
+                            {
+                               turn = true;
+                            }
+                                    else if(inp == 's')
+                                        {
+                                            playtot = total;
+                                            turn = false;
+                                        }
+            }
+    if(total == 21)
+    {
+       ifWon(total,play_num);
+       playtot = total;
+       turn = false;
+    }
+            
+                    if(total > 21)
+                    {
+                        ifLoss(total,play_num);
+                        playtot = total;
+                        turn = false;
+                    }
+
+            count ++;
+            
+        }while(turn == true);
+}
+void dealInf(Card *deck, int &deal_tot)
+{
+        char card1 = 0, card2 = 0, ch;
+        bool turn = true;
+        int total = 0, count = 0;
+        int aVal = 0;
+        char newCard = 0;
+    PlayerScores score;
+    do
+        {
+           if(count == 0)
+           {
+            card1 = deck[rand()%52].num;
+            card2 = deck[rand()%52].num;
+           }
+            if(count>0)
+            {
+                newCard = deck[rand()%52].num;
+                cout << "Press Enter to draw another card." << endl;
+                cin.get(ch);
+                cout << "The dealers new card value is: " << newCard << " of " << deck[rand()%52].suit << endl;
+            }
+            
+        if(count == 0)
+        {
+           cout << "Dealer, your cards are " << card1 << " of " << deck[rand()%52].suit;
+           cout << " and " << card2 << " of " << deck[rand()%52].suit << endl;
+        }
+            
+        if(card1 == 'A')
+        {
+            cout << "You drew an 'A', would you like that value to equal 1 or 11?" << endl;
+            cin >> aVal;
+            
+            if(aVal == 1)
+            {
+                card1 = 1;
+            }else
+            {
+                card1 = 11;
+            }
+        }
+                    if(card2 == 'A')
+                    {
+                        cout << "You drew an 'A', would you like that value to equal 1 or 11?" << endl;
+                        cin >> aVal;
+                        
+                        if(aVal == 1)
+                        {
+                            card2 = 1;
+                        }else
+                        {
+                            card2 = 11;
+                        }
+                    }
+                                            if(newCard == 'A')
+                                               {
+                                                   cout << "You drew an 'A', would you like that value to equal 1 or 11?" << endl;
+                                                   cin >> aVal;
+                                                   
+                                                   if(aVal == 1)
+                                                   {
+                                                       newCard = 1;
+                                                   }else
+                                                   {
+                                                       newCard = 11;
+                                                   }
+                                               }
+        switch(card1)
+        {
+            case '2' : card1 = 2;
+                break;
+            case '3' : card1 = 3;
+                break;
+            case '4' : card1 = 4;
+                break;
+            case '5' : card1 = 5;
+                break;
+            case '6' : card1 = 6;
+                break;
+            case '7' : card1 = 7;
+                break;
+            case '8' : card1 = 8;
+                break;
+            case '9' : card1 = 9;
+                break;
+        }
+                        switch(card2)
+                        {
+                            case '2' : card2 = 2;
+                                break;
+                            case '3' : card2 = 3;
+                                break;
+                            case '4' : card2 = 4;
+                                break;
+                            case '5' : card2 = 5;
+                                break;
+                            case '6' : card2 = 6;
+                                break;
+                            case '7' : card2 = 7;
+                                break;
+                            case '8' : card2 = 8;
+                                break;
+                            case '9' : card2 = 9;
+                                break;
+                        }
+                                        switch(newCard)
+                                        {
+                                            case '2' : newCard = 2;
+                                                break;
+                                            case '3' : newCard = 3;
+                                                break;
+                                            case '4' : newCard = 4;
+                                                break;
+                                            case '5' : newCard = 5;
+                                                break;
+                                            case '6' : newCard = 6;
+                                                break;
+                                            case '7' : newCard = 7;
+                                                break;
+                                            case '8' : newCard = 8;
+                                                break;
+                                            case '9' : newCard = 9;
+                                                break;
+                                        }
+        
+         if (card1 == 'T' || card1 == 'J' || card1 == 'Q' || card1 == 'K')
+         {
+             card1 = 10;
+         }
+        if (card2 == 'T' || card2 == 'J' || card2 == 'Q' || card2 == 'K')
+        {
+            card2 = 10;
+        }
+        if (newCard == 'T' || newCard == 'J' || newCard == 'Q' || newCard == 'K')
+        {
+                newCard = 10;
+        }
+
+            if(count == 0)
+            {
+                total += card1 + card2;
+            }
+            
+            if(count > 0)
+            {
+                total += newCard;
+            }
+            
+            if(total < 17)
+            {
+                cout << "Your combined card total is: " << total << endl;
+                cout << "The dealer is forced to hit until his total is above 17." << endl;
+                turn = true;
+            }
+                        if(total >= 17 && total < 21)
+                        {
+                            cout << "The dealers score is: " << total << endl;
+                            deal_tot = total;
+                            turn = false;
+                        }
+    if(total == 21)
+    {
+       deal_tot = total;
+       turn = false;
+    }
+            
+                    if(total > 21)
+                    {
+                        
+                        deal_tot = total;
+                        turn = false;
+                    }
+                            
+            score.dealer = total;
+            count ++;
+            
+        }while(turn == true);
+    
+    
+}
+void ifWon(int tot, int playNum)
+{
+    cout << "Player " << playNum << " you have beat the dealer, your total score is: " << tot << "!" << endl;
+}
+void ifLoss(int tot, int playNum)
+{
+    cout << "Player " << playNum << " you have busted! You have lost to the dealer because your score is: " << tot << "!):" << endl;
+}
+void cmpSc2(Card *deck,int play1, int play2, int &deal_tot)
+{
+    char ch;
+    cout << "Before we can display the scores against the dealer, the dealer must reveal their cards! Press Enter" << endl;
+    cin.get(ch);
+    cin.get(ch);
+    dealInf(deck,deal_tot);
+    cout << "Press Enter to see the scores." << endl;
+    cin.get(ch);
+    cout << "Here are the scores of the players against the dealers score:" << endl;
+    cout << "Player 1: " << setw(6) << play1 << endl;
+    cout << "Player 2: " << setw(6) << play2 << endl;
+    cout << "Dealer: " << setw(8)<< deal_tot << endl << endl;
+    
+            if( play1 == 21 && deal_tot < 21)
+            {
+                cout << "Player 1 has beat the dealer." << endl;
+            }
+            else if( play2 == 21 && deal_tot < 21)
+            {
+                cout << "Player 2 has beat the dealer." << endl;
+            }
+            else if(play1 > deal_tot && deal_tot < 21)
+            {
+                cout << "Player 1 has beat the dealer." << endl;
+
+            }
+            else if( play2 > deal_tot && deal_tot < 21)
+            {
+                cout << "Player 2 has beat the dealer." << endl;
+
+            }
+            else if(deal_tot == 21 && play1 < 21 &&  play2 < 21 )
+            {
+                cout << "The dealer has won!" << endl;
+            }
+            else if(deal_tot == 21 &&  play1 == 21)
+            {
+                cout << "There is no winner because the dealer and Player 1 have both scored 21." << endl;
+            }
+            else if(deal_tot == 21 &&  play2 == 21)
+            {
+                cout << "There is no winner because the dealer and Player 2 have both scored 21." << endl;
+            }
+            else if (deal_tot > play1 && deal_tot > play2)
+            {
+                 cout << "The dealer has won!" << endl;
+            }
+}
+void cmpSc3(Card *deck,int play1,int play2,int play3,int &deal_tot)
+{
+       char ch;
+       cout << "Before we can display the scores against the dealer, the dealer must reveal their cards! Press Enter" << endl;
+       cin.get(ch);
+       cin.get(ch);
+       dealInf(deck,deal_tot);
+       cout << "Press Enter to see the scores." << endl;
+       cin.get(ch);
+       cout << "Here are the scores of the players against the dealers score:" << endl;
+       cout << "Player 1: " << setw(6) << play1 << endl;
+       cout << "Player 2: " << setw(6) << play2 << endl;
+       cout << "Player 3: " << setw(6) << play3 << endl;
+       cout << "Dealer: " << setw(8)<< deal_tot << endl << endl;
+       
+               if( play1 == 21 && deal_tot < 21)
+               {
+                   cout << "Player 1 has beat the dealer." << endl;
+               }
+               else if( play2 == 21 && deal_tot < 21)
+               {
+                   cout << "Player 2 has beat the dealer." << endl;
+               }
+               else if( play3 == 21 && deal_tot < 21)
+               {
+                   cout << "Player 3 has beat the dealer." << endl;
+               }
+               else if(play1 > deal_tot && play1 < 21)
+               {
+                   cout << "Player 1 has beat the dealer." << endl;
+
+               }
+               else if( play2 > deal_tot && play2 < 21)
+               {
+                   cout << "Player 2 has beat the dealer." << endl;
+
+               }
+               else if( play3 > deal_tot && play3 < 21)
+               {
+                   cout << "Player 3 has beat the dealer." << endl;
+
+               }
+               else if(deal_tot == 21 && play1 < 21 &&  play2 < 21 )
+               {
+                   cout << "The dealer has won!" << endl;
+               }
+               else if(deal_tot == 21 &&  play1 == 21)
+               {
+                   cout << "There is no winner because the dealer and Player 1 have both scored 21." << endl;
+               }
+               else if(deal_tot == 21 &&  play2 == 21)
+               {
+                   cout << "There is no winner because the dealer and Player 2 have both scored 21." << endl;
+               }
+                else if(deal_tot == 21 &&  play3 == 21)
+                {
+                    cout << "There is no winner because the dealer and Player 2 have both scored 21." << endl;
+                }
+               else if (deal_tot <= 21 && deal_tot > play1 && deal_tot > play2 && deal_tot > play3)
+               {
+                    cout << "The dealer has won!" << endl;
+               }
+}
