@@ -1,0 +1,120 @@
+//
+//  main.cpp
+//  CIS_17A - Project #1
+//
+//  Created by Juan Lopez on 10/13/20.
+//  Copyright © 2020 Juan Lopez. All rights reserved.
+//
+
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <cstdlib>
+#include <vector>
+using namespace std;
+
+enum Numbs {One, Two, Three, Four, Five, Six, Seven, Eight,
+                                Nine, Ten, Jack, Queen, King};
+enum Suit {Diamond, Spades, Hearts, Clubs};
+
+
+const int age_size = 3;
+const int sch_size = 50;
+const static int mSize_card = 52;
+//This structure is used for...
+struct PlayerInfo
+{
+    char name[sch_size];
+    char age[3];
+    char school[sch_size];
+};
+struct Card
+{
+    Numbs numb;
+    Suit suits;
+    int num_size = 13;
+    int suit_size = 4;
+};
+struct Deck
+{
+    Card cards[];
+};
+//Function calls are used to perform...
+void initDeck(Deck&);
+void print_deck(const Deck&);
+void print_card(const Card&);
+//void shuffCards();
+
+int main(int argc, const char * argv[]) {
+    // insert code here...
+    PlayerInfo *person = nullptr;
+    int nPlayers;
+/*
+    cout << "Hello user! Welcome to the game of BlackJack..." << endl;
+    cout << "You will be given the chance to input the number of players playing " << endl;
+    cout << "this game momentarily, but for now sit tight and listen to the rules" << endl;
+    cout << "of this game." << endl << endl;
+    
+    cout << "Players will be randomly given two cards face up, the goal of this game" << endl;
+    cout << "is to pull cards that add up closest to or on the value of 21." << endl;
+    cout << "If a player pulls 21 on the first 2 given cards he automatically wins the money" << endl;
+    cout << "they have bet back!" << endl << endl;
+    cout << "However, if no players pulls 21 on the first cards, they all have to try their best to " << endl;
+    cout << "beat the dealer (myself) by pulling cards and getting closest or on the number 21." << endl << endl;
+    
+    
+    cout << "*****************************************************************************" << endl << endl;
+    
+    cout << "Now please enter the number of players. Be sure to pick between 2-4 players." << endl;
+    
+    cin >> nPlayers;
+    
+    while(nPlayers < 2 || nPlayers > 4)
+    {
+        cout << "Please enter players between 2-4!" << endl;
+            cin >> nPlayers;
+    }
+    
+    person = new PlayerInfo[nPlayers];
+    
+    fstream people("people.dat", ios:: out | ios::binary);
+    
+    int count = 0;
+    
+    for(int i = 0; i < nPlayers; i++)
+    {
+        if(count < 1)
+        {
+        cout << "Please enter the data for the " << nPlayers << " players playing this game." << endl;
+        cout << "Begin by entering the data for player " << i+1 << endl;
+            count++;
+        }
+        cout << "Enter the full name of player " << i+1 << ":" << endl;
+        cin.ignore();
+        cin.getline(person->name,sch_size);
+        cout << "Now enter the age of this player: " << endl;
+        cin.getline(person->age, age_size);
+        cout << "Now enter the school they attend: " << endl;
+        cin.getline(person->school,sch_size);
+        
+        cout << "Now this info is being written into a file for records of the players.." << endl;
+        
+        people.write(reinterpret_cast<char *>(&person), sizeof(person));
+        
+        cout << "Player " << i + 1 << "done!" << endl;
+        
+        people.close();
+        
+    }
+   */
+    
+   Deck stDeck;
+   
+   initDeck(stDeck);
+   print_deck(stDeck);
+    
+  //  cout << "The game is beggining and the cards are being shuffled!" << endl;
+
+    return 0;
+}
+
