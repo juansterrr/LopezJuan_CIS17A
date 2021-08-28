@@ -1,1 +1,81 @@
+//  Car.cpp
+//  Car - Ch. 13 - Gaddis
+//
+//  Created by Juan Lopez on 8/27/21.
+//
+
+#include "Car.hpp"
+#include <stdio.h>
+#include <iostream>
+using namespace std;
+
+
+Car::Car(int year, string mK)
+{
+    YearMod = year;
+    make = mK;
+    speed = 0;
+}
+
+void Car::setYear(int year)
+{
+    YearMod = year;
+}
+void Car::setMake(string mK)
+{
+    make = mK;
+}
+void Car::setSpd(int s)
+{
+    speed = s;
+}
+
+//
+//  Car.hpp
+//  Car - Ch. 13 - Gaddis
+//
+//  Created by Juan Lopez on 8/27/21.
+//
+
+#ifndef Car_hpp
+#define Car_hpp
+
+#include <stdio.h>
+#include <iostream>
+using namespace std;
+
+class Car
+
+{
+private:
+    int YearMod;
+    string make;
+    int speed;
+    
+public:
+    
+    Car(int,string);
+    void setYear(int);
+    void setMake(string);
+    void setSpd(int);
+    
+    void accel()
+    {
+        speed += 5;
+    }
+    void brake()
+    {
+        while(speed > 0)
+        {
+            speed -= 5;
+        }
+    }
+    
+};
+
+
+
+
+
+#endif /* Car_hpp */
 
